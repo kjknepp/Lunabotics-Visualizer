@@ -3,29 +3,21 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:Controls="clr-namespace:Elysium.Controls;assembly=Elysium"
         xmlns:params="http://schemas.codeplex.com/elysium/params" x:Name="window" x:Class="MainWindow"
+        xmlns:sparrow="http://sparrowtoolkit.codeplex.com/wpf"
         WindowStartupLocation="CenterScreen"
         params:Design.Theme="Light" 
-        params:Manager.Theme="Light" FontSize="16" FontFamily="Segoe UI Light" Title="Visualizer - Purdue Lunabotics" Foreground="#FF4D4D4D" Icon="Icons/BlueMoon/BlueMoon48.ico" Loaded="Window_Loaded" Width="1080" Height="650" MinWidth="1080" MinHeight="650"  >
-
+        params:Manager.Theme="Light" FontSize="16" FontFamily="Segoe UI Light" Title="Visualizer - Purdue Lunabotics" Foreground="#FF4D4D4D" Icon="Icons/BlueMoon/BlueMoon48.ico" Loaded="Window_Loaded" Width="1080" Height="650" MinWidth="1080" MinHeight="650" WindowState="Maximized" SizeToContent="WidthAndHeight" ResizeMode="CanResize" Controls:Window.IsMainWindow="False" AllowDrop="False"  >
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="77*"/>
+            <RowDefinition Height="130*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
 
-
-        <Menu Margin="0" VerticalAlignment="Top" Padding="0,0,6,0" Grid.ColumnSpan="2">
-            <MenuItem Header="FILE" Foreground="White" Background="#FF117DD6" Padding="6,2" BorderThickness="0,1,1,0" FontSize="14"/>
-            <MenuItem Header="EDIT" FontSize="14" Padding="6,2"/>
-            <MenuItem Header="VIEW" FontSize="14" Padding="6,2"/>
-            <MenuItem Header="PROJECT" FontSize="14" Padding="6,2"/>
-            <MenuItem Header="TOOLS" FontSize="14" Padding="6,2">
-                <MenuItem Header="Customze..." FontSize="14" Padding="6,2,6,6"/>
-                <MenuItem Header="Monitor Modify" FontSize="14" Padding="6,2,6,6"/>
-                <Separator />
-                <MenuItem Header="Interface Settings" FontSize="14" Padding="6,2,6,6"/>
-            </MenuItem>
-            <MenuItem Header="HELP" FontSize="14" Padding="6,2"/>
-        </Menu>
-
-        <TabControl Margin="10,46,10,25" Grid.ColumnSpan="2">
-            <TabItem Header="Overview">
+        <TabControl Margin="10,10,10.333,24.667" Grid.RowSpan="2">
+            <TabItem Header="Overview" Margin="0,0,0.333,0">
                 <Grid Background="#FFFFFFFF">
 
                     <Grid.RowDefinitions>
@@ -34,112 +26,354 @@
                         <RowDefinition/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition Width="117*"/>
+                        <ColumnDefinition Width="43*"/>
+                        <ColumnDefinition Width="74*"/>
+                        <ColumnDefinition Width="117*"/>
                     </Grid.ColumnDefinitions>
-
-
-                    <GroupBox Header="Autonomy &amp; Control" Margin="2.5" MinHeight="100" MinWidth="400" FontSize="14" Foreground="#FF0467AA"  Grid.ColumnSpan="2">
-                        
+                    <GroupBox Header="System Log" Margin="2,2,2.333,2.333" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Row="2" Grid.ColumnSpan="4">
+                        <TextBox x:Name="outSystemLog" Height="136" Margin="4,8,-1.667,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" FontSize="16" VerticalContentAlignment="Top"/>
                     </GroupBox>
-                    
-                    <GroupBox Header="ExDep" Margin="2.5" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Column="3"/>
+                    <GroupBox Header="Camera Feed" Margin="2.667,2,1.667,1.667" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
+                    <GroupBox Header="Control" Margin="4,0,0.333,3.667" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Row="0" Grid.RowSpan="2"/>
+                    <GroupBox Header="Power" Margin="2.001,2,2.333,2.333" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Row="0" Grid.Column="3"/>
+                    <GroupBox Header="Communication Status" Margin="2.001,2.667,2.333,2" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Row="1" Grid.Column="3"/>
+                    <!-- Power Group -->
+                    <TextBox x:Name="p_outCurrent_overview" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Height="32" TextWrapping="Wrap" Text="20 A" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16" Margin="221.001,28,0,0"/>
+                    <TextBox x:Name="p_outVoltage_overview" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Height="30" TextWrapping="Wrap" Text="24.6 V" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16" Margin="221.001,83,0,0"/>
+                    <TextBox x:Name="p_outPowerConsumed_overview" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" Height="30" TextWrapping="Wrap" Text="492 W" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16" Margin="220.001,142,0,0"/>
+                    <TextBlock x:Name="p_current_overview" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Current:" VerticalAlignment="Top" Height="24" Width="184" FontSize="18.667" Margin="11.001,32,0,0"/>
+                    <TextBlock x:Name="p_voltage_overview" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="Voltage:" VerticalAlignment="Top" Height="24" Width="186" FontSize="18.667" Margin="10.001,86,0,0"/>
+                    <TextBlock x:Name="p_power_overview" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="Total Power Consumed:" VerticalAlignment="Top" Height="24" Width="186" FontSize="18.667" Margin="9.001,145,0,0"/>
 
+                    <!-- Control Group -->
+                    <TextBlock x:Name="excavRPM_control" Grid.Column="0" HorizontalAlignment="Left" Margin="10,42,0,0" TextWrapping="Wrap" Text="Excavation Motor RPM" VerticalAlignment="Top" Height="30" Width="200" FontSize="17.333"/>
+                    <TextBlock x:Name="excavActHeight_control" Grid.Column="0" HorizontalAlignment="Left" Margin="10,90,0,0" TextWrapping="Wrap" Text="Excavation Actuator Height" VerticalAlignment="Top" Height="30" Width="200" FontSize="17.333"/>
+                    <TextBlock x:Name="bucketWeight_control" Grid.Column="0" HorizontalAlignment="Left"  Margin="10,140,0,0" TextWrapping="Wrap" Text="Bucket Weight" VerticalAlignment="Top" Height="30" Width="118" FontSize="17.333"/>
+                    <TextBlock x:Name="depActHeight_control" Grid.Column="0" HorizontalAlignment="Left" Margin="10,10.667,0,0" TextWrapping="Wrap" Text="Deposition Actuator Height" VerticalAlignment="Top" Height="30" Width="200" FontSize="17.333" Grid.Row="1"/>
+                    <TextBlock x:Name="leftRPM_control" Grid.Column="0" HorizontalAlignment="Left" Margin="10,60.667,0,0" TextWrapping="Wrap" Text="Left Motor RPM" VerticalAlignment="Top" Height="30" Width="118" FontSize="17.333" Grid.Row="1"/>
+                    <TextBlock x:Name="rightRPM_control" Grid.Column="0" HorizontalAlignment="Left" Margin="10,110.667,0,0" TextWrapping="Wrap" Text="Right Motor RPM" VerticalAlignment="Top" Height="30" Width="130" FontSize="17.333" Grid.Row="1"/>
 
-                    <GroupBox Header="Drive Train" Margin="2.5" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Row="1"/>
-                    <GroupBox Header="Power" Margin="2.5" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Row="1" Grid.Column="1"/>
-                    <GroupBox Header="Lunabot Control Panel" Margin="2.5" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Row="1" Grid.Column="2">
-                        <Grid >
-                            <Button x:Name="Reset_Btn" Content="Reset" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Margin="190,70,0,0"/>
-                            <TextBlock HorizontalAlignment="Left" Margin="30,0,0,87" TextWrapping="Wrap" VerticalAlignment="Bottom" TextAlignment="Left" FontSize="14" Text="Watchdog" Foreground="Black"/>
-                            <TextBlock HorizontalAlignment="Left" Margin="30,0,0,39" TextWrapping="Wrap" VerticalAlignment="Bottom" TextAlignment="Left" FontSize="14" Text="Warm Restart" Foreground="Black"/>
-                            <ProgressBar HorizontalAlignment="Left" Height="15" Margin="190,32,0,0" VerticalAlignment="Top" Width="75" Value="50" Foreground="#FF0467AA"/>
-                        </Grid>
-
-
-                    </GroupBox>
-
-                    <GroupBox Header="System Log" Margin="2.5" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Row="2" Grid.ColumnSpan="3"/>
-
+                    <TextBox x:Name="outExcRPM_control" HorizontalAlignment="Left" Height="34" Margin="210,40,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="131" TextAlignment="Center" FontSize="16"/>
+                    <TextBox x:Name="outExcHeight_control" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="50cm / 19.69 inch" VerticalAlignment="Top" Width="131" TextAlignment="Center" FontSize="16" Margin="210,84,0,0"/>
+                    <TextBox x:Name="outDepHeight_control" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="50cm / 19.69 inch" VerticalAlignment="Top" Width="131" TextAlignment="Center" FontSize="16" Margin="210,9.667,0,0" Grid.Row="1"/>
+                    <TextBox x:Name="outBucket_control" HorizontalAlignment="Left" Height="34" Margin="210,135,0,0" TextWrapping="Wrap" Text="100 kg / 220lbs" VerticalAlignment="Top" Width="131" TextAlignment="Center" FontSize="16"/>
+                    <TextBox x:Name="outLeftRPM_control" HorizontalAlignment="Left" Height="34" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="131" TextAlignment="Center" FontSize="16" Margin="210,60.667,0,0" Grid.Row="1"/>
+                    <TextBox x:Name="outRightRPM_control" HorizontalAlignment="Left" Height="34"  TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="131" TextAlignment="Center" FontSize="16" Margin="210,112.667,0,0" Grid.Row="1"/>
+                    <!-- Communication Status Group-->
+                    <Label x:Name="label_autonomy" Grid.Row="1" Grid.Column="3" Content="Autonomy Mode" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Margin="44.001,44.667,0,0"/>
+                    <Label x:Name="label_System" Grid.Row="1" Grid.Column="3" Content="System" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Margin="44.001,111.667,0,0"/>
+                    <Label x:Name="label_Connection" Grid.Row="1" Grid.Column="3" Content="Offline" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18.667" Margin="255.001,111.667,0,0" />
+                    <Controls:ToggleSwitch x:Name="AutoToggle" Grid.Row="1" Grid.Column="3" Margin="255.001,52.667,43.333,110" IsChecked="True" RenderTransformOrigin="0.503,0.5"/>
                 </Grid>
 
             </TabItem>
 
             <TabItem Header="Autonomy">
-                <Grid Background="#FFFFFFFF">
+                <Grid Background="#FFFFFFFF" RenderTransformOrigin="0.425,0.477">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="7*"/>
+                        <ColumnDefinition Width="110*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image x:Name="image1_Copy" HorizontalAlignment="Left" Height="287" VerticalAlignment="Top" Width="243" Margin="36,93,0,0" RenderTransformOrigin="0.413,-0.921" Grid.ColumnSpan="2">
+                        <Image.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform AngleY="-0.115"/>
+                                <RotateTransform/>
+                                <TranslateTransform Y="-0.457"/>
+                            </TransformGroup>
+                        </Image.RenderTransform>
+                    </Image>
+                    <TextBox x:Name="DataLog" HorizontalAlignment="Left" Height="134" TextWrapping="Wrap" Text="Data Log" VerticalAlignment="Top" Width="993" Margin="30,388,0,0" FontSize="26.667" FontWeight="Bold" TextDecorations="Underline" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="textBox3" HorizontalAlignment="Left" Height="65" TextWrapping="Wrap" Text="Live Camera Feed" VerticalAlignment="Top" Width="161" Margin="18.833,15,0,0" FontSize="18.667" FontWeight="Bold" RenderTransformOrigin="0.47,0.518" Grid.Column="1">
+                        <TextBox.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="-0.346"/>
+                                <TranslateTransform X="0.007" Y="0.029"/>
+                            </TransformGroup>
+                        </TextBox.RenderTransform>
+                    </TextBox>
+                    <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="214" Stroke="Black" VerticalAlignment="Top" Width="109" Margin="386.833,110,0,0" Grid.Column="1"/>
+                    <TextBox x:Name="textBox3_Copy" HorizontalAlignment="Left" Height="40" TextWrapping="Wrap" Text="Rover Position&#xD;&#xA;" VerticalAlignment="Top" Width="161" Margin="365.833,10,0,0" FontSize="18.667" FontWeight="Bold" RenderTransformOrigin="0.699,0.894" Grid.Column="1">
+                        <TextBox.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="-0.346"/>
+                                <TranslateTransform X="0.179" Y="-0.195"/>
+                            </TransformGroup>
+                        </TextBox.RenderTransform>
+                    </TextBox>
+                    <TextBox x:Name="textBox3_Copy1" HorizontalAlignment="Left" Height="43" TextWrapping="Wrap" Text="7.38 m&#xA;" VerticalAlignment="Top" Width="64" Margin="457.833,185,0,0" FontSize="18.667" FontWeight="Bold" RenderTransformOrigin="0.699,0.894" Grid.Column="1">
+                        <TextBox.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="89.301"/>
+                                <TranslateTransform X="0.179" Y="-0.195"/>
+                            </TransformGroup>
+                        </TextBox.RenderTransform>
+                    </TextBox>
+                    <TextBox x:Name="textBox3_Copy2" HorizontalAlignment="Left" Height="43" TextWrapping="Wrap" Text="3.78 m&#xA;" VerticalAlignment="Top" Width="64" Margin="409.833,325,0,0" FontSize="18.667" FontWeight="Bold" RenderTransformOrigin="0.699,0.894" Grid.Column="1">
+                        <TextBox.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="0.062"/>
+                                <TranslateTransform X="0.179" Y="-0.195"/>
+                            </TransformGroup>
+                        </TextBox.RenderTransform>
+                    </TextBox>
+                    <Separator HorizontalAlignment="Left" Height="8" Margin="526.833,159,0,0" VerticalAlignment="Top" Width="2" Grid.Column="1"/>
+                    <Separator HorizontalAlignment="Left" Height="43" Margin="366.833,110,0,0" VerticalAlignment="Top" Width="1" Grid.Column="1"/>
+                    <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="43" Stroke="Black" VerticalAlignment="Top" Width="1" Margin="366.833,110,0,0" Grid.Column="1"/>
+                    <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="15" Stroke="Black" VerticalAlignment="Top" Width="1" Margin="367.833,144,0,0" RenderTransformOrigin="0.5,0.5" Grid.Column="1">
+                        <Rectangle.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="-88.298"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="85" Stroke="Black" VerticalAlignment="Top" Width="1" Margin="366.833,153,0,0" Grid.Column="1"/>
+                    <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="15" Stroke="Black" VerticalAlignment="Top" Width="1" Margin="367.833,231,0,0" RenderTransformOrigin="0.5,0.5" Grid.Column="1">
+                        <Rectangle.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="-88.298"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Rectangle.RenderTransform>
+                    </Rectangle>
+                    <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="85" Stroke="Black" VerticalAlignment="Top" Width="1" Margin="366.833,239,0,0" Grid.Column="1"/>
+                    <TextBox x:Name="textBox3_Copy3" HorizontalAlignment="Left" Height="43" TextWrapping="Wrap" Text="Start Zone&#xA;" VerticalAlignment="Top" Width="94" Margin="261.833,108,0,0" FontSize="18.667" FontWeight="Bold" RenderTransformOrigin="0.699,0.894" Grid.Column="1">
+                        <TextBox.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="0.062"/>
+                                <TranslateTransform X="0.179" Y="-0.195"/>
+                            </TransformGroup>
+                        </TextBox.RenderTransform>
+                    </TextBox>
+                    <TextBox x:Name="textBox3_Copy4" HorizontalAlignment="Left" Height="43" TextWrapping="Wrap" Text="Obstacle Area&#xA;" VerticalAlignment="Top" Width="127" Margin="231.833,175,0,0" FontSize="18.667" FontWeight="Bold" RenderTransformOrigin="0.699,0.894" Grid.Column="1">
+                        <TextBox.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="0.062"/>
+                                <TranslateTransform X="0.179" Y="-0.195"/>
+                            </TransformGroup>
+                        </TextBox.RenderTransform>
+                    </TextBox>
+                    <TextBox x:Name="textBox3_Copy5" HorizontalAlignment="Left" Height="43" TextWrapping="Wrap" Text="Mining Area&#xA;" VerticalAlignment="Top" Width="127" Margin="230.833,258,0,0" FontSize="18.667" FontWeight="Bold" RenderTransformOrigin="0.699,0.894" Grid.Column="1">
+                        <TextBox.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="0.062"/>
+                                <TranslateTransform X="0.179" Y="-0.195"/>
+                            </TransformGroup>
+                        </TextBox.RenderTransform>
+                    </TextBox>
+                    <Rectangle Fill="#FFF4F4F5" HorizontalAlignment="Left" Height="13" Stroke="Black" VerticalAlignment="Top" Width="45" Margin="418.833,97,0,0" Grid.Column="1"/>
+                    <Ellipse Fill="#FF96E146"
+                             HorizontalAlignment="Left"
+                             Height="17" Stroke="Black"
+                             VerticalAlignment="Top"
+                             Width="34" Grid.Column="1"
+                             Margin="397.667,123,0,0"
+                             RenderTransformOrigin="0.5,0.5">
+                        <Ellipse.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="0"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
+                </Grid>
+
+            </TabItem>
+
+            <TabItem Header="Control" RenderTransformOrigin="-2.278,0.44">
+                <Grid Background="#FFFFFFFF" Margin="0,4,0.333,-4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="159*"/>
+                        <ColumnDefinition Width="895*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="excavRPM" HorizontalAlignment="Left" Margin="74,55,0,0" TextWrapping="Wrap" Text="Excavation Motor RPM" VerticalAlignment="Top" Height="23" Width="200" FontSize="18.667" Grid.ColumnSpan="2"/>
+                    <TextBlock x:Name="excavActHeight" HorizontalAlignment="Left" Margin="593.333,300,0,0" TextWrapping="Wrap" Text="Excavation Actuator Position" VerticalAlignment="Top" Height="23" Width="233" FontSize="18.667" Grid.Column="1"/>
+                    <TextBlock x:Name="bucketWeight" HorizontalAlignment="Left" Margin="112,296,0,0" TextWrapping="Wrap" Text="Bucket Weight" VerticalAlignment="Top" Height="23" Width="131" FontSize="18.667" Grid.ColumnSpan="2"/>
+                    <TextBlock x:Name="depActHeight" HorizontalAlignment="Left" Margin="249.333,298,0,0" TextWrapping="Wrap" Text="Deposition Position" VerticalAlignment="Top" Height="23" Width="233" FontSize="18.667" Grid.Column="1"/>
+                    <TextBlock x:Name="leftRPM" HorizontalAlignment="Left" Margin="282.333,57,0,0" TextWrapping="Wrap" Text="Left Motor RPM" VerticalAlignment="Top" Height="24" Width="140" FontSize="18.667" Grid.Column="1"/>
+                    <TextBlock x:Name="rightRPM" HorizontalAlignment="Left" Margin="628.333,54,0,0" TextWrapping="Wrap" Text="Right Motor RPM" VerticalAlignment="Top" Height="24" Width="140" FontSize="18.667" Grid.Column="1"/>
+                    <TextBlock x:Name="current" HorizontalAlignment="Left" Margin="101,420,0,0" TextWrapping="Wrap" Text="System Current" VerticalAlignment="Top" Height="30" Width="131" FontSize="18.667" Grid.ColumnSpan="2"/>
+                    <TextBlock x:Name="voltage" HorizontalAlignment="Left" Margin="289.333,423,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="27" Width="122" FontSize="18.667" Grid.Column="1"><Run Text="System Voltage"/><LineBreak/><Run/></TextBlock>
+                    <TextBlock x:Name="power" HorizontalAlignment="Left" Margin="614.333,426,0,0" TextWrapping="Wrap" Text="Total Power Consumed" VerticalAlignment="Top" Height="24" Width="185" FontSize="18.667" Grid.Column="1"/>
+                    <TextBox x:Name="outVoltage" HorizontalAlignment="Left" Height="31" Margin="291.333,466,0,0" TextWrapping="Wrap" Text="24.6 V" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16" Grid.Column="1"/>
+                    <TextBox x:Name="outPowerConsumed" HorizontalAlignment="Left" Height="31" Margin="657.333,466,0,0" TextWrapping="Wrap" Text="492 W" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16" Grid.Column="1"/>
+                    <TextBox x:Name="outExcRPM" HorizontalAlignment="Left" Height="34" Margin="101,104,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="131" TextAlignment="Center" FontSize="16" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="outExcHeight" HorizontalAlignment="Left" Height="34" Margin="646.333,345,0,0" TextWrapping="Wrap" Text="50cm / 19.69 inch" VerticalAlignment="Top" Width="131" TextAlignment="Center" FontSize="16" Grid.Column="1"/>
+                    <TextBox x:Name="outDepHeight" HorizontalAlignment="Left" Height="34" Margin="291.333,345,0,0" TextWrapping="Wrap" Text="50cm / 19.69 inch" VerticalAlignment="Top" Width="131" TextAlignment="Center" FontSize="16" Grid.Column="1"/>
+                    <TextBox x:Name="outBucket" HorizontalAlignment="Left" Height="34" Margin="101,345,0,0" TextWrapping="Wrap" Text="100 kg / 220lbs" VerticalAlignment="Top" Width="131" TextAlignment="Center" FontSize="16" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="outLeftRPM" HorizontalAlignment="Left" Height="34" Margin="628.333,104,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="140" TextAlignment="Center" FontSize="16" Grid.Column="1"/>
+                    <TextBox x:Name="outRightRPM" HorizontalAlignment="Left" Height="34" Margin="282.333,104,0,0" TextWrapping="Wrap" Text="200" VerticalAlignment="Top" Width="140" TextAlignment="Center" FontSize="16" Grid.Column="1"/>
+                    <TextBlock x:Name="excavActHeight_Copy" HorizontalAlignment="Left" Margin="300.333,182,0,0" TextWrapping="Wrap" Text="Left Current" VerticalAlignment="Top" Height="23" Width="103" FontSize="18.667" Grid.Column="1"/>
+                    <TextBlock x:Name="excavActHeight_Copy1" HorizontalAlignment="Left" Margin="101,180,0,0" TextWrapping="Wrap" Text="Excavation Current" VerticalAlignment="Top" Height="23" Width="154" FontSize="18.667" Grid.ColumnSpan="2"/>
+                    <TextBlock x:Name="excavActHeight_Copy2" HorizontalAlignment="Left" Margin="646.333,184,0,0" TextWrapping="Wrap" Text="Right Current" VerticalAlignment="Top" Height="23" Width="111" FontSize="18.667" Grid.Column="1"/>
+                    <TextBox x:Name="outCurrent_exc" HorizontalAlignment="Left" Height="31" Margin="112,227,0,0" TextWrapping="Wrap" Text="20" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16" TextDecorations="{x:Null}" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="outCurrent_left" HorizontalAlignment="Left" Height="31" Margin="283.333,227,0,0" TextWrapping="Wrap" Text="20" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16" TextDecorations="{x:Null}" Grid.Column="1"/>
+                    <TextBox x:Name="outCurrent_system" HorizontalAlignment="Left" Height="31" Margin="101,466,0,0" TextWrapping="Wrap" Text="20" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16" TextDecorations="{x:Null}" Grid.ColumnSpan="2"/>
+                    <TextBox x:Name="outCurrent_right" HorizontalAlignment="Left" Height="31" Margin="637.333,227,0,0" TextWrapping="Wrap" Text="20" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16" TextDecorations="{x:Null}" Grid.Column="1"/>
 
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Control">
-                <Grid Background="#FFFFFFFF">
-
+            <TabItem Header="Power" Height="42" Margin="0,0,-0.333,0" VerticalAlignment="Top">
+                <Grid Background="#FFFFFFFF" Margin="0,-10,0.333,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="43*"/>
+                        <ColumnDefinition Width="1010*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="p_outCurrent" HorizontalAlignment="Left" Height="31" Margin="171.833,47,0,0" TextWrapping="Wrap" Text="20 A" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16" TextDecorations="{x:Null}" Grid.Column="1"/>
+                    <TextBox x:Name="p_outVoltage" HorizontalAlignment="Left" Height="31" Margin="501.833,47,0,0" TextWrapping="Wrap" Text="24.6 V" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16" Grid.Column="1"/>
+                    <TextBox x:Name="p_outPowerConsumed" HorizontalAlignment="Left" Height="31" Margin="869.833,47,0,0" TextWrapping="Wrap" Text="492 W" VerticalAlignment="Top" Width="120" TextAlignment="Center" FontSize="16" Grid.Column="1"/>
+                    <TextBlock x:Name="p_current" HorizontalAlignment="Left" Margin="43.833,54,0,0" TextWrapping="Wrap" Text="Current:" VerticalAlignment="Top" Height="24" Width="185" FontSize="18.667" Grid.Column="1"/>
+                    <TextBlock x:Name="p_voltage" HorizontalAlignment="Left" Margin="356.833,54,0,0" TextWrapping="Wrap" Text="Voltage:" VerticalAlignment="Top" Height="24" Width="185" FontSize="18.667" Grid.Column="1"/>
+                    <TextBlock x:Name="p_power" HorizontalAlignment="Left" Margin="664.833,54,0,0" TextWrapping="Wrap" Text="Total Power Consumed:" VerticalAlignment="Top" Height="24" Width="185" FontSize="18.667" Grid.Column="1"/>
                 </Grid>
             </TabItem>
 
-            <TabItem Header="DriveTrain">
+            <TabItem Header="Controller">
                 <Grid Background="#FFFFFFFF">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
 
-                </Grid>
-            </TabItem>
+                    <Controls:ProgressBar Name="LProgress" Grid.Row="0" Grid.Column="3" Grid.RowSpan="2" MinWidth="30" Orientation="Vertical" />
+                    <Controls:ProgressBar Name="RProgress" Grid.Row="0" Grid.Column="8" Grid.RowSpan="2" MinWidth="30" Orientation="Vertical" />
 
-            <TabItem Header="Power">
-                <Grid Background="#FFFFFFFF">
+                    <Controls:ProgressBar Name="UpProgress" Grid.Row="3" Grid.Column="2"  MinWidth="30" Orientation="Vertical" />
+                    <Controls:ProgressBar Name="DownProgress" Grid.Row="5" Grid.Column="2"  MinWidth="30" Orientation="Vertical" RenderTransformOrigin="0.5,0.5" >
+                        <Controls:ProgressBar.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="180"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Controls:ProgressBar.RenderTransform>
+                    </Controls:ProgressBar>
+                    <Controls:ProgressBar Name="LeftProgress" Grid.Row="4" Grid.Column="1"  MinHeight="30" Orientation="Horizontal" RenderTransformOrigin="0.5,0.5" >
+                        <Controls:ProgressBar.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="180"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Controls:ProgressBar.RenderTransform>
+                    </Controls:ProgressBar>
+                    <Controls:ProgressBar Name="RightProgress" Grid.Row="4" Grid.Column="3"  MinHeight="30" Orientation="Horizontal" />
 
-                </Grid>
-            </TabItem>
+                    <Controls:ProgressBar Name="Up1Progress" Grid.Row="6" Grid.Column="8"  MinWidth="30" Orientation="Vertical" />
+                    <Controls:ProgressBar Name="Down1Progress" Grid.Row="8" Grid.Column="8"  MinWidth="30" Orientation="Vertical" RenderTransformOrigin="0.5,0.5" >
+                        <Controls:ProgressBar.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="180"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Controls:ProgressBar.RenderTransform>
+                    </Controls:ProgressBar>
+                    <Controls:ProgressBar Name="Left1Progress" Grid.Row="7" Grid.Column="7"  MinHeight="30" Orientation="Horizontal" RenderTransformOrigin="0.5,0.5" >
+                        <Controls:ProgressBar.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="180"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Controls:ProgressBar.RenderTransform>
+                    </Controls:ProgressBar>
+                    <Controls:ProgressBar Name="Right1Progress" Grid.Row="7" Grid.Column="9"  MinHeight="30" Orientation="Horizontal" />
 
-            <TabItem Header="ExDep">
-                <Grid Background="#FFFFFFFF">
+                    <Controls:ToggleCommandButton Name="YButton" Grid.Row="3" Grid.Column="9" Background="#FFFFD155" Width="60" Content="Y"/>
+                    <Controls:ToggleCommandButton Name="AButton" Grid.Row="5" Grid.Column="9" Background="#FF88EC10" Width="60" Content="A"/>
+                    <Controls:ToggleCommandButton Name="XButton" Grid.Row="4" Grid.Column="8" Background="#FF6395FF" Width="60" Content="X"/>
+                    <Controls:ToggleCommandButton Name="BButton" Grid.Row="4" Grid.Column="10" Background="#FFFF3B3B" Width="60" Content="B"/>
 
+                    <Controls:ToggleCommandButton Name="UpButton" Grid.Row="6" Grid.Column="3"  Width="60" Background="#FF686868" Content="Up"/>
+                    <Controls:ToggleCommandButton Name="DownButton" Grid.Row="8" Grid.Column="3"  Width="60" Background="#FF686868" Content="Down"/>
+                    <Controls:ToggleCommandButton Name="LeftButton" Grid.Row="7" Grid.Column="2"  Width="60" Background="#FF686868" Content="Left"/>
+                    <Controls:ToggleCommandButton Name="RightButton" Grid.Row="7" Grid.Column="4"  Width="60" Background="#FF686868" Content="Right"/>
+
+                    <Controls:ToggleCommandButton Name="BackButton" Grid.Row="2" Grid.Column="4" Background="Black" Width="60"/>
+                    <Controls:ToggleCommandButton Name="StartButton" Grid.Row="2" Grid.Column="7" Background="Black" Width="60"/>
+                    <Label x:Name="label5" Content="Purdue Lunabotics Controller Monitor" Grid.Row ="0" Grid.Column="4" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="21.333" FontWeight="Bold"/>
+                    <Label x:Name="label6" Content="XBOX 360 Controller Status" Grid.Row ="1" Grid.Column="4" Grid.ColumnSpan="4" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="21.333" FontWeight="Bold"/>
+                    <Button x:Name="LB" Content="LB" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Width="75"/>
+                    <Button x:Name="RB" Content="RB" Grid.Column="9" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Width="75"/>
+                    <Label x:Name="BackLabel" Content="Back" Grid.Row ="2" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="21.333" FontWeight="Bold"/>
+                    <Label x:Name="StartLabel" Content="Start" Grid.Row ="2" Grid.Column="8" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="21.333" FontWeight="Bold"/>
                 </Grid>
             </TabItem>
 
             <TabItem Header="Communications">
-                <Grid Background="#FFFFFFFF">
+                <Grid Background="#FFFFFFFF" Margin="2,0,-1.667,-13">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                
-                    <Grid HorizontalAlignment="Left">
 
+                    <Grid HorizontalAlignment="Left"/>
 
-                        <TextBlock HorizontalAlignment="Left" Margin="14,10,0,0" TextWrapping="Wrap" Text="Local Interface" VerticalAlignment="Top" Height="19" Width="89" FontSize="13" Foreground="#FF0467AA"/>
-                        <ComboBox x:Name="LocalInterfaces_ComboBox" HorizontalAlignment="Left" Margin="14,34,0,0" VerticalAlignment="Top" FontSize="12" MinWidth="456" />
-                        <CheckBox x:Name="ShowAllInterfaces_ChkBox" Content="Show all Interfaces" HorizontalAlignment="Left" Margin="14,68,0,0" VerticalAlignment="Top" FontSize="13" Height="18" Width="135"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="14,93,0,0" TextWrapping="Wrap" Text="Local IP Address" VerticalAlignment="Top" Height="19" Width="89" FontSize="13"/>
-                        <TextBlock x:Name="LocalIP_TextBlk" HorizontalAlignment="Left" Margin="151,93,0,0" TextWrapping="Wrap" Text="---" VerticalAlignment="Top" FontSize="13"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="14,117,0,0" TextWrapping="Wrap" Text="Local MAC Address" VerticalAlignment="Top" Height="19" Width="89" FontSize="13"/>
-                        <TextBlock x:Name="LocalMAC_TextBlk" HorizontalAlignment="Left" Margin="151,117,0,0" TextWrapping="Wrap" Text="---" VerticalAlignment="Top" FontSize="13"/>
+                    <GroupBox Header="Communications Log" Margin="2,0,10.333,58.667" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.ColumnSpan="2">
+                        <TextBlock x:Name="ComLog" HorizontalAlignment="Left" Margin="0,0,-1.667,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="450" Width="1031"/>
+                    </GroupBox>
+                    <Button x:Name="saveButton" Grid.Column="1" HorizontalAlignment="Left" Margin="285.333,477,0,0" VerticalAlignment="Top" Width="176" Height="64">
+                        <Button x:Name="button" Content="Button" Width="75"/>
+                    </Button>
 
-                        <GroupBox Header="Dicovered Connection" HorizontalAlignment="Left" Margin="14,258,0,0" VerticalAlignment="Top" Height="154" Width="456" FontSize="13" Foreground="#FF0467AA">
-                            <ListBox x:Name="DiscoveredConnection_ListBox" HorizontalAlignment="Left" Height="119" Margin="8,9,0,0" VerticalAlignment="Top" Width="424" >
-
-                            </ListBox>
-                        </GroupBox>
-                        <Button x:Name="Apply_Btn" Content="Apply" HorizontalAlignment="Left" Margin="395,420,0,0" VerticalAlignment="Top" Width="75"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="14,151,0,0" TextWrapping="Wrap" Text="Remote Interface" VerticalAlignment="Top" Height="19" FontSize="13" Foreground="#FF0467AA"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="14,197,0,0" TextWrapping="Wrap" Text="IP Address" VerticalAlignment="Top" Height="19" Width="89" FontSize="13"/>
-                        <TextBlock x:Name="RemoteIP_TextBlk" HorizontalAlignment="Left" Margin="151,197,0,0" TextWrapping="Wrap" Text="---" VerticalAlignment="Top" FontSize="13"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="14,221,0,0" TextWrapping="Wrap" Text="Mac Address" VerticalAlignment="Top" Height="19" Width="89" FontSize="13"/>
-                        <TextBlock x:Name="RemoteMAC_TextBlk" HorizontalAlignment="Left" Margin="151,221,0,0" TextWrapping="Wrap" Text="---" VerticalAlignment="Top" FontSize="13"/>
-                        <TextBlock HorizontalAlignment="Left" Margin="14,173,0,0" TextWrapping="Wrap" Text="Lunabot ID" VerticalAlignment="Top" Height="19" Width="89" FontSize="13"/>
-                        <TextBlock x:Name="RemoteInterfaceName_TextBlk" HorizontalAlignment="Left" Margin="151,174,0,0" TextWrapping="Wrap" Text="---" VerticalAlignment="Top" FontSize="13"/>
-                        <Button x:Name="Test_Btn" Content="Test" HorizontalAlignment="Left" Margin="14,420,0,0" VerticalAlignment="Top" Width="75"/>
-
-                    </Grid>
-
-                    <GroupBox Header="Communications Log" Margin="2.5" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Column="2" Grid.ColumnSpan="3"/>
-                    
                 </Grid>
             </TabItem>
 
+
         </TabControl>
 
-        <Controls:ProgressRing HorizontalAlignment="Right" Margin="0,60,15,0" VerticalAlignment="Top" State="Indeterminate" FlowDirection="RightToLeft"      Height="20" Width="20" Grid.Column="1" />
-        <TextBlock x:Name="StatusText" HorizontalAlignment="Left" Margin="10,0,0,3" TextWrapping="Wrap" VerticalAlignment="Bottom" TextAlignment="Right" FontSize="14" Text="Offline"/>
+
 
 
     </Grid>

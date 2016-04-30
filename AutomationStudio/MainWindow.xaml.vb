@@ -461,7 +461,7 @@ Class MainWindow
             'Needs Bumper Postion(20)
             Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setExcCurrent), New Object() {(Convert.ToInt32(a(21)) << 8) + Convert.ToInt32(a(22))})
             Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setLeftCurrent), New Object() {(Convert.ToInt32(a(23)) << 8) + Convert.ToInt32(a(24))})
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setRightCurrent), New Object() {(Convert.ToInt32(a(25)) << 8) + Convert.ToInt32(a(26))})
+            'Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setRightCurrent), New Object() {(Convert.ToInt32(a(25)) << 8) + Convert.ToInt32(a(26))})
         End If
 
 
@@ -470,9 +470,9 @@ Class MainWindow
             Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setOutSystemLog), New Object() {1})
         End If
 
-        Dim outMessage(0) As Byte
+        Dim outMessage(7) As Byte
         Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf checkAutoToggle), New Object() {1})
-        If isAuto Then
+        If isAuto = 0 Then
             outMessage(0) = 1 'Auto ON
             Dim r As Integer = Await AsyncUDPClient.client.SendAsync(outMessage, 10, AsyncUDPClient.BbbIP)
         Else
@@ -495,7 +495,9 @@ Class MainWindow
             End If
             outMessage(5) = Conversion.Int(currentState.Triggers.Left * 255)
             outMessage(6) = Conversion.Int(currentState.Triggers.Right * 255)
+            'Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setLeftCurrent), New Object() {(Convert.ToInt32(a(25)) << 8) + Convert.ToInt32(a(26))})
             Dim r As Integer = Await AsyncUDPClient.client.SendAsync(outMessage, 1, AsyncUDPClient.BbbIP)
+            'Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setRightCurrent), New Object() {(Convert.ToInt32(a(25)) << 8) + Convert.ToInt32(a(26))})
         End If
     End Sub
     Private Sub AutoToggle_Unchecked(sender As Object, e As RoutedEventArgs) Handles AutoToggle.Unchecked
@@ -509,20 +511,20 @@ Class MainWindow
     End Sub
 
     Private Sub saveButton_Click(sender As Object, e As RoutedEventArgs) Handles saveButton.Click
-        Dim L As Boolean = 1
-        Dim LogFile As String = "LogFile"
-        Dim i As Integer = 0
-        While ([L])
-            If My.Computer.FileSystem.FileExists(LogFile) Then
-                Dim file As System.IO.StreamWriter
-                file = My.Computer.FileSystem.OpenTextFileWriter(LogFile + ".txt", True)
-                file.Write(ComLog.Text)
-                file.Close()
-                L = 0
-            Else
-                LogFile = "LogFile"
-                LogFile += CStr(i)
-            End If
-        End While
+        'Dim L As Boolean = 1
+        'Dim LogFile As String = "LogFile"
+        'Dim i As Integer = 0
+        'While ([L])
+        'If My.Computer.FileSystem.FileExists(LogFile) Then
+        'Dim file As System.IO.StreamWriter
+        'File = My.Computer.FileSystem.OpenTextFileWriter(LogFile + ".txt", True)
+        'File.Write(ComLog.Text)
+        'File.Close()
+        'L = 0
+        'Else
+        'LogFile = "LogFile"
+        'LogFile += CStr(i)
+        'End If
+        'End While
     End Sub
 End Class

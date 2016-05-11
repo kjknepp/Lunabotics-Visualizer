@@ -125,9 +125,6 @@ Class MainWindow
 
 
     Delegate Sub SetTextBoxes(ByVal value As Integer)
-    Friend Sub setBumperSwitches(ByVal value As Integer)
-
-    End Sub
     Friend Sub checkAutoToggle(ByVal value As Integer)
         If AutoToggle.IsChecked = "True" Then
             isAuto = 1
@@ -135,16 +132,14 @@ Class MainWindow
             isAuto = 0
         End If
     End Sub
-    Friend Sub setBinSwitches(ByVal value As Integer)
+    Friend Sub setSwitches(ByVal value As Integer)
         outBucket_control.Text = value
-        outBucket.Text = value
     End Sub
     Friend Sub setCurrent(ByVal value As Integer)
         Dim out As Double = Convert.ToDouble(value) / BYTE2MAX * SYS_MAXCURRENT
         out = Convert.ToDouble(Convert.ToInt16(out * 100)) / 100 'Two Decimal Places
         p_outCurrent_overview.Text = out
         p_outCurrent.Text = out
-        outCurrent_system.Text = out
         'Dim thing As New Sparrow.Chart.DoublePoint()
         'thing.Data = nextPointCurrent
         'nextPointCurrent += 1
@@ -153,7 +148,6 @@ Class MainWindow
     End Sub
     Friend Sub setDepPos(ByVal value As Integer)
         outDepHeight_control.Text = value
-        outDepHeight.Text = value
     End Sub
     Friend Sub setERR(ByVal value As Integer) 'FIX ERR CODES HERE
     End Sub
@@ -162,11 +156,9 @@ Class MainWindow
         out = Convert.ToDouble(Convert.ToInt16(out * 100)) / 100 'Two Decimal Places
         p_outPowerConsumed_overview.Text = out
         p_outPowerConsumed.Text = out
-        outPowerConsumed.Text = out
     End Sub
     Friend Sub setExcPos(ByVal value As Integer)
-        outExcHeight_control.Text = value
-        outExcHeight.Text = value
+        outExcAngle_control.Text = value
     End Sub
     Friend Sub setExcCurrent(ByVal value As Integer)
         Dim isNeg As UShort = (theNegs And (1 << 7)) >> 7
@@ -175,14 +167,13 @@ Class MainWindow
             out = out * -1
         End If
         out = Convert.ToDouble(Convert.ToInt16(out * 100)) / 100 'Two Decimal Places
-        outCurrent_exc.Text = out
+        outExcCurrent_control.Text = out
     End Sub
     Friend Sub setVoltage(ByVal value As Integer)
         Dim out As Double = Convert.ToDouble(value) / BYTE2MAX * SYS_MAXVOLT
         out = Convert.ToDouble(Convert.ToInt16(out * 100)) / 100 'Two Decimal Places
         p_outVoltage_overview.Text = out
         p_outVoltage.Text = out
-        outVoltage.Text = out
     End Sub
 
 
@@ -468,35 +459,36 @@ Class MainWindow
     Private Async Sub MessageOutTimer_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer1.Elapsed
         Dim outMessage(7) As Byte
         Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf checkAutoToggle), New Object() {1})
-        If isAuto = 0 Then
-            outMessage(0) = 1 'Auto ON
-            Dim r As Integer = Await AsyncUDPClient.client.SendAsync(outMessage, 10, AsyncUDPClient.BbbIP)
-        Else
-            outMessage(0) = 0 'Auto OFF
-            Dim out As Byte = (Aon << 7) + (Bon << 6) + (BACKon << 5) + (LBon << 4) + (RBon << 3) + (DPDOWNon << 2) + (DPLEFTon << 1) + (DPRIGHTon)
-            outMessage(1) = out
-            out = (DPUPon << 7) + (STARTon << 6) + (Xon << 5) + (Yon << 4) 'ROOM FOR 2 MORE BOOLS WITHOUT INCREASE OF DATA
-            outMessage(2) = out
-            If currentState.ThumbSticks.Left.Y >= 0 Then
-                outMessage(3) = Conversion.Int(currentState.ThumbSticks.Left.Y * 255)
+        Try
+            If isAuto = 0 Then
+                outMessage(0) = 1 'Auto ON
+                Dim r As Integer = Await AsyncUDPClient.client.SendAsync(outMessage, 10, AsyncUDPClient.BbbIP)
             Else
-                outMessage(2) += 1 << 3 'outMessage(2) index 4
-                outMessage(3) = Conversion.Int(currentState.ThumbSticks.Left.Y * -255)
-            End If
-            If currentState.ThumbSticks.Right.Y >= 0 Then
-                outMessage(4) = Conversion.Int(currentState.ThumbSticks.Right.Y * 255)
-            Else
-                outMessage(2) += 1 << 2 'outMessage(2) index 5
-                outMessage(4) = Conversion.Int(currentState.ThumbSticks.Right.Y * -255)
-            End If
-            outMessage(5) = Conversion.Int(currentState.Triggers.Left * 255)
-            outMessage(6) = Conversion.Int(currentState.Triggers.Right * 255)
-            Try
+                outMessage(0) = 0 'Auto OFF
+                Dim out As Byte = (Aon << 7) + (Bon << 6) + (BACKon << 5) + (LBon << 4) + (RBon << 3) + (DPDOWNon << 2) + (DPLEFTon << 1) + (DPRIGHTon)
+                outMessage(1) = out
+                out = (DPUPon << 7) + (STARTon << 6) + (Xon << 5) + (Yon << 4) 'ROOM FOR 2 MORE BOOLS WITHOUT INCREASE OF DATA
+                outMessage(2) = out
+                If currentState.ThumbSticks.Left.Y >= 0 Then
+                    outMessage(3) = Conversion.Int(currentState.ThumbSticks.Left.Y * 255)
+                Else
+                    outMessage(2) += 1 << 3 'outMessage(2) index 4
+                    outMessage(3) = Conversion.Int(currentState.ThumbSticks.Left.Y * -255)
+                End If
+                If currentState.ThumbSticks.Right.Y >= 0 Then
+                    outMessage(4) = Conversion.Int(currentState.ThumbSticks.Right.Y * 255)
+                Else
+                    outMessage(2) += 1 << 2 'outMessage(2) index 5
+                    outMessage(4) = Conversion.Int(currentState.ThumbSticks.Right.Y * -255)
+                End If
+                outMessage(5) = Conversion.Int(currentState.Triggers.Left * 255)
+                outMessage(6) = Conversion.Int(currentState.Triggers.Right * 255)
+
                 Dim r As Integer = Await AsyncUDPClient.client.SendAsync(outMessage, 1, AsyncUDPClient.BbbIP)
-            Catch
-                Me.Dispatcher.Invoke(New mainLog(AddressOf addOutSystemLog), New Object() {3})
-            End Try
-        End If
+            End If
+        Catch
+            Me.Dispatcher.Invoke(New mainLog(AddressOf addOutSystemLog), New Object() {3})
+        End Try
     End Sub
 
 
@@ -505,10 +497,10 @@ Class MainWindow
         Dim a As Byte()
         Try
             a = Await AsyncUDPClient.client.ReceiveAsync(1)
-            theNegs = a(16)
+            theNegs = a(15)
             Me.Dispatcher.Invoke(New outLogs(AddressOf setComLog), New Object() {a}) 'Needs Update
             Me.Dispatcher.Invoke(New SetCheckBoxCallback(AddressOf setOnline), New Object() {True})
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setBinSwitches), New Object() {a(0)})
+            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setSwitches), New Object() {a(0)})
 
             Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setCurrent), New Object() {(Convert.ToInt32(a(1)) << 8) + Convert.ToInt32(a(2))})
             Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setERR), New Object() {a(3)})
@@ -523,9 +515,9 @@ Class MainWindow
             Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setExcPos), New Object() {a(10)})
 
             Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setVoltage), New Object() {(Convert.ToInt32(a(11)) << 8) + Convert.ToInt32(a(12))})
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setBumperSwitches), New Object() {a(13)})
+            'Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setBumperSwitches), New Object() {a(13)})
 
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setExcCurrent), New Object() {(Convert.ToInt32(a(14)) << 8) + Convert.ToInt32(a(15))})
+            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setExcCurrent), New Object() {(Convert.ToInt32(a(13)) << 8) + Convert.ToInt32(a(14))})
 
         Catch
             Me.Dispatcher.Invoke(New mainLog(AddressOf addOutSystemLog), New Object() {2})

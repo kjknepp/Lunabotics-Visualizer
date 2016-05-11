@@ -18,10 +18,10 @@ Public Class AsyncUDPClient
 
     Private _Listner As Task
     Private _ListnerCTS As CancellationTokenSource
-    'Public Shared BbbIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("192.168.1.31"), 9909)
-    'Public Shared MyIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("192.168.1.23"), 9910)
     Public Shared BbbIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("192.168.1.31"), 9909)
-    Public Shared MyIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("192.168.1.28"), 9910)
+    Public Shared MyIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("192.168.1.23"), 9910)
+    'Public Shared BbbIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("192.168.1.31"), 9909)
+    'Public Shared MyIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("192.168.1.28"), 9910)
     Public Shared client As New AsyncUDPClient()
     'Public Shared doConnect As Boolean = 0
 

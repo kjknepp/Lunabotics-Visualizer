@@ -32,7 +32,7 @@
                         <ColumnDefinition Width="117*"/>
                     </Grid.ColumnDefinitions>
                     <GroupBox Header="System Log" Margin="2,2,2.333,2.333" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Row="2" Grid.ColumnSpan="4">
-                        <TextBox x:Name="outSystemLog" Height="136" Margin="4,8,-1.667,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" FontSize="16" VerticalContentAlignment="Top"/>
+                        <TextBlock x:Name="outSystemLog" HorizontalAlignment="Left" Height="146" Margin="0,4,-1.667,-2" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="1039"/>
                     </GroupBox>
                     <GroupBox Header="Camera Feed" Margin="2.667,2,1.667,1.667" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Column="1" Grid.ColumnSpan="2" Grid.RowSpan="2"/>
                     <GroupBox Header="Control" Margin="4,0,0.333,3.667" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.Row="0" Grid.RowSpan="2"/>
@@ -363,8 +363,8 @@
                     <GroupBox Header="Communications Log" Margin="2,0,10.333,58.667" MinHeight="150" MinWidth="300" FontSize="14" Foreground="#FF0467AA" Grid.ColumnSpan="2">
                         <TextBlock x:Name="ComLog" HorizontalAlignment="Left" Margin="0,0,-1.667,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="450" Width="1031"/>
                     </GroupBox>
-                    <Button x:Name="saveButton" Grid.Column="1" HorizontalAlignment="Left" Margin="285.333,477,0,0" VerticalAlignment="Top" Width="176" Height="64">
-                        <Button x:Name="button" Content="Button" Width="75"/>
+                    <Button x:Name="saveButton" Grid.Column="1" HorizontalAlignment="Left" Margin="285.333,477,0,0" VerticalAlignment="Top" Width="176" Height="49">
+                        <Button x:Name="button" Content="Save" Width="75"/>
                     </Button>
 
                 </Grid>

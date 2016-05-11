@@ -57,6 +57,8 @@ Class MainWindow
     Private nextPointPower As Integer = 1
 
     Private isAuto As Integer = 1
+    Private isRunning As Integer = 0
+    Private dontTry As Integer = 0
 
     Private Sub Window_Loaded(sender As Object, e As RoutedEventArgs)
 
@@ -64,10 +66,10 @@ Class MainWindow
 
     Friend WithEvents Timer1 As Timer
 
-    Delegate Sub controlUI()
-    Friend Sub sendMessage()
 
-    End Sub
+
+
+
     Delegate Sub outLogs(ByVal a As Byte())
     Friend Sub setComLog(ByVal a As Byte())
         'ComLog.Text += TimeValue(Now) + ":  "
@@ -90,12 +92,42 @@ Class MainWindow
         '"
 
     End Sub
+
     Delegate Sub SetVectors(ByVal x As Integer, ByVal y As Integer)
     Friend Sub setPosition(ByVal x As Integer, ByVal y As Integer) 'SET POSITION HERE
     End Sub
     Friend Sub setDirection(ByVal x As Integer, ByVal y As Integer) 'SET DIRECTION HERE
     End Sub
+
+
+
+
+
+    Delegate Sub mainLog(ByVal value As Integer)
+    Friend Sub resetOutSystemLog(ByVal value As Integer)
+        outSystemLog.Text = ""
+    End Sub
+    Friend Sub addOutSystemLog(ByVal value As Integer)
+        If value = 1 Then
+            outSystemLog.Text += "Controller not connected
+"
+        ElseIf value = 2 Then
+            outSystemLog.Text += "Message not recieved
+"
+        ElseIf value = 3 Then
+            outSystemLog.Text += "Message not sent
+"
+        End If
+    End Sub
+
+
+
+
+
     Delegate Sub SetTextBoxes(ByVal value As Integer)
+    Friend Sub setBumperSwitches(ByVal value As Integer)
+
+    End Sub
     Friend Sub checkAutoToggle(ByVal value As Integer)
         If AutoToggle.IsChecked = "True" Then
             isAuto = 1
@@ -103,18 +135,7 @@ Class MainWindow
             isAuto = 0
         End If
     End Sub
-    Friend Sub setOutSystemLog(ByVal value As Integer)
-        If value = 1 Then
-            If outSystemLog.Text IsNot "Controller not connected
-" Then
-                outSystemLog.Text += "Controller not connected
-"
-            End If
-        Else
-            outSystemLog.Text = ""
-        End If
-    End Sub
-    Friend Sub setBucketWeight(ByVal value As Integer)
+    Friend Sub setBinSwitches(ByVal value As Integer)
         outBucket_control.Text = value
         outBucket.Text = value
     End Sub
@@ -147,18 +168,8 @@ Class MainWindow
         outExcHeight_control.Text = value
         outExcHeight.Text = value
     End Sub
-    Friend Sub setExcRPM(ByVal value As Integer)
-        Dim isNeg As UShort = (theNegs And (1 << 7)) >> 7
-        Dim out As Double = Convert.ToDouble(value) / BYTE2MAX * EXCAV_MAXRPM
-        If isNeg = 1 Then
-            out = out * -1
-        End If
-        out = Convert.ToDouble(Convert.ToInt16(out * 100)) / 100 'Two Decimal Places
-        outExcRPM_control.Text = out
-        outExcRPM.Text = out
-    End Sub
     Friend Sub setExcCurrent(ByVal value As Integer)
-        Dim isNeg As UShort = (theNegs And (1 << 6)) >> 6
+        Dim isNeg As UShort = (theNegs And (1 << 7)) >> 7
         Dim out As Double = Convert.ToDouble(value) / BYTE2MAX * EXCAV_MAXCURRENT
         If isNeg = 1 Then
             out = out * -1
@@ -173,44 +184,10 @@ Class MainWindow
         p_outVoltage.Text = out
         outVoltage.Text = out
     End Sub
-    Friend Sub setLeftRPM(ByVal value As Integer)
-        Dim isNeg As UShort = (theNegs And 32) >> 5
-        Dim out As Double = Convert.ToDouble(value) / BYTE2MAX * LEFT_MAXRPM
-        If isNeg = 1 Then
-            out = out * -1
-        End If
-        out = Convert.ToDouble(Convert.ToInt16(out * 100)) / 100 'Two Decimal Places
-        outLeftRPM_control.Text = out
-        outLeftRPM.Text = out
-    End Sub
-    Friend Sub setLeftCurrent(ByVal value As Integer)
-        Dim isNeg As UShort = (theNegs And (1 << 4)) >> 4
-        Dim out As Double = Convert.ToDouble(value) / BYTE2MAX * LEFT_MAXCURRENT
-        If isNeg = 1 Then
-            out = out * -1
-        End If
-        out = Convert.ToDouble(Convert.ToInt16(out * 100)) / 100 'Two Decimal Places
-        outCurrent_left.Text = out
-    End Sub
-    Friend Sub setRightRPM(ByVal value As Integer)
-        Dim isNeg As UShort = (theNegs And (1 << 3)) >> 3
-        Dim out As Double = Convert.ToDouble(value) / BYTE2MAX * RIGHT_MAXRPM
-        If isNeg = 1 Then
-            out = out * -1
-        End If
-        out = Convert.ToDouble(Convert.ToInt16(out * 100)) / 100 'Two Decimal Places
-        outRightRPM_control.Text = out
-        outRightRPM.Text = out
-    End Sub
-    Friend Sub setRightCurrent(ByVal value As Integer)
-        Dim isNeg As UShort = (theNegs And (1 << 2)) >> 2
-        Dim out As Double = Convert.ToDouble(value) / BYTE2MAX * RIGHT_MAXCURRENT
-        If isNeg = 1 Then
-            out = out * -1
-        End If
-        out = Convert.ToDouble(Convert.ToInt16(out * 100)) / 100 'Two Decimal Places
-        outCurrent_right.Text = out
-    End Sub
+
+
+
+
     Delegate Sub SetCheckBoxCallback(ByVal value As Boolean)
     Friend Sub setOnline(ByVal value As Boolean)
         If value = True Then
@@ -249,6 +226,10 @@ Class MainWindow
     Friend Sub SetBackCheckBox(ByVal value As Boolean)
         BackButton.IsChecked = value
     End Sub
+
+
+
+
     Delegate Sub SetButtonCallback(ByVal value As String)
     Friend Sub SetLBButton(ByVal value As String)
         LB.Content = value
@@ -256,6 +237,10 @@ Class MainWindow
     Friend Sub SetRBButton(ByVal value As String)
         RB.Content = value
     End Sub
+
+
+
+
     Delegate Sub SetProgressBarCallback(ByVal value As Single)
     Friend Sub SetLProgressBar(ByVal value As Single)
         LProgress.Value = Convert.ToDouble(value) * 100
@@ -323,6 +308,10 @@ Class MainWindow
             Right1Progress.Value = 0
         End If
     End Sub
+
+
+
+
 
     Private Function setXBoxButtons()
         If currentState.IsConnected Then
@@ -431,45 +420,52 @@ Class MainWindow
         Return 1
     End Function
 
-    Private Async Sub Timer1_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer1.Elapsed
 
-        Dim mask As Byte = 255
-        Dim a As Byte()
-        If AsyncUDPClient.hasSent Then
-            a = Await AsyncUDPClient.client.ReceiveAsync(1)
-            theNegs = a(27)
-            Me.Dispatcher.Invoke(New outLogs(AddressOf setComLog), New Object() {a}) 'Needs Update
-            Me.Dispatcher.Invoke(New SetCheckBoxCallback(AddressOf setOnline), New Object() {True})
 
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setBucketWeight), New Object() {a(0)})
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setCurrent), New Object() {(Convert.ToInt32(a(1)) << 8) + Convert.ToInt32(a(2))})
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setDepPos), New Object() {a(3)})
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setERR), New Object() {a(4)})
 
-            'SetPosition
-            Me.Dispatcher.Invoke(New SetVectors(AddressOf setPosition), New Object() {a(5), a(6)})
 
-            'SetDirection
-            Me.Dispatcher.Invoke(New SetVectors(AddressOf setDirection), New Object() {a(7), a(8)})
 
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setTotalPower), New Object() {(Convert.ToInt32(a(9)) << 8) + Convert.ToInt32(a(10))})
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setExcPos), New Object() {a(11)})
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setExcRPM), New Object() {(Convert.ToInt32(a(12)) << 8) + Convert.ToInt32(a(13))})
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setLeftRPM), New Object() {(Convert.ToInt32(a(14)) << 8) + Convert.ToInt32(a(15))})
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setRightRPM), New Object() {(Convert.ToInt32(a(16)) << 8) + Convert.ToInt32(a(17))})
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setVoltage), New Object() {(Convert.ToInt32(a(18)) << 8) + Convert.ToInt32(a(19))})
-            'Needs Bumper Postion(20)
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setExcCurrent), New Object() {(Convert.ToInt32(a(21)) << 8) + Convert.ToInt32(a(22))})
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setLeftCurrent), New Object() {(Convert.ToInt32(a(23)) << 8) + Convert.ToInt32(a(24))})
-            'Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setRightCurrent), New Object() {(Convert.ToInt32(a(25)) << 8) + Convert.ToInt32(a(26))})
+    Private Sub AutoToggle_Unchecked(sender As Object, e As RoutedEventArgs) Handles AutoToggle.Unchecked
+        'Are You sure?
+        If dontTry = 0 Then
+            Dim result As Integer = MessageBox.Show("This will terminate Autonomy mode and may NOT be turned back on", "Are You sure?", MessageBoxButton.YesNo)
+            If result = 6 Then
+                AutoToggle.IsEnabled = False
+                isAuto = 0
+            End If
         End If
+    End Sub
+
+    Private Sub saveButton_Click(sender As Object, e As RoutedEventArgs) Handles saveButton.Click
+        Dim L As Boolean = 1
+        Dim LogFile As String = "LogFile"
+        Dim i As Integer = 0
+        While ([L])
+            If My.Computer.FileSystem.FileExists(LogFile) Then
+                LogFile = "LogFile"
+                LogFile += CStr(i)
+                i += 1
+            Else
+                Dim file As System.IO.StreamWriter
+                file = My.Computer.FileSystem.OpenTextFileWriter(LogFile + ".txt", True)
+                file.Write(ComLog.Text)
+                file.Close()
+                L = 0
+            End If
+        End While
+    End Sub
 
 
-        currentState = GamePad.GetState(PlayerIndex.One)
-        If setXBoxButtons() Then
-            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setOutSystemLog), New Object() {1})
-        End If
 
+
+
+
+
+
+
+
+
+    Private Async Sub MessageOutTimer_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer1.Elapsed
         Dim outMessage(7) As Byte
         Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf checkAutoToggle), New Object() {1})
         If isAuto = 0 Then
@@ -495,36 +491,56 @@ Class MainWindow
             End If
             outMessage(5) = Conversion.Int(currentState.Triggers.Left * 255)
             outMessage(6) = Conversion.Int(currentState.Triggers.Right * 255)
-            'Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setLeftCurrent), New Object() {(Convert.ToInt32(a(25)) << 8) + Convert.ToInt32(a(26))})
-            Dim r As Integer = Await AsyncUDPClient.client.SendAsync(outMessage, 1, AsyncUDPClient.BbbIP)
-            'Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setRightCurrent), New Object() {(Convert.ToInt32(a(25)) << 8) + Convert.ToInt32(a(26))})
-        End If
-    End Sub
-    Private Sub AutoToggle_Unchecked(sender As Object, e As RoutedEventArgs) Handles AutoToggle.Unchecked
-        'Are You sure?
-        Dim result As Integer = MessageBox.Show("This will terminate Autonomy mode and may NOT be turned back on", "Are You sure?", MessageBoxButton.YesNo)
-        If result = 7 Then
-            AutoToggle.IsChecked = True
-            AutoToggle.IsEnabled = False
-            isAuto = 0
+            Try
+                Dim r As Integer = Await AsyncUDPClient.client.SendAsync(outMessage, 1, AsyncUDPClient.BbbIP)
+            Catch
+                Me.Dispatcher.Invoke(New mainLog(AddressOf addOutSystemLog), New Object() {3})
+            End Try
         End If
     End Sub
 
-    Private Sub saveButton_Click(sender As Object, e As RoutedEventArgs) Handles saveButton.Click
-        'Dim L As Boolean = 1
-        'Dim LogFile As String = "LogFile"
-        'Dim i As Integer = 0
-        'While ([L])
-        'If My.Computer.FileSystem.FileExists(LogFile) Then
-        'Dim file As System.IO.StreamWriter
-        'File = My.Computer.FileSystem.OpenTextFileWriter(LogFile + ".txt", True)
-        'File.Write(ComLog.Text)
-        'File.Close()
-        'L = 0
-        'Else
-        'LogFile = "LogFile"
-        'LogFile += CStr(i)
-        'End If
-        'End While
+
+
+    Private Async Sub MessageInTimer_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer1.Elapsed
+        Dim a As Byte()
+        Try
+            a = Await AsyncUDPClient.client.ReceiveAsync(1)
+            theNegs = a(16)
+            Me.Dispatcher.Invoke(New outLogs(AddressOf setComLog), New Object() {a}) 'Needs Update
+            Me.Dispatcher.Invoke(New SetCheckBoxCallback(AddressOf setOnline), New Object() {True})
+            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setBinSwitches), New Object() {a(0)})
+
+            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setCurrent), New Object() {(Convert.ToInt32(a(1)) << 8) + Convert.ToInt32(a(2))})
+            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setERR), New Object() {a(3)})
+
+            'SetPosition
+            Me.Dispatcher.Invoke(New SetVectors(AddressOf setPosition), New Object() {a(4), a(5)})
+
+            'SetDirection
+            Me.Dispatcher.Invoke(New SetVectors(AddressOf setDirection), New Object() {a(6), a(7)})
+
+            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setTotalPower), New Object() {(Convert.ToInt32(a(8)) << 8) + Convert.ToInt32(a(9))})
+            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setExcPos), New Object() {a(10)})
+
+            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setVoltage), New Object() {(Convert.ToInt32(a(11)) << 8) + Convert.ToInt32(a(12))})
+            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setBumperSwitches), New Object() {a(13)})
+
+            Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setExcCurrent), New Object() {(Convert.ToInt32(a(14)) << 8) + Convert.ToInt32(a(15))})
+
+        Catch
+            Me.Dispatcher.Invoke(New mainLog(AddressOf addOutSystemLog), New Object() {2})
+        End Try
+    End Sub
+
+
+
+    Private Async Sub Timer1_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer1.Elapsed
+        Await Task.Delay(0)
+        isRunning = 1
+        'Me.Dispatcher.Invoke(New mainLog(AddressOf resetOutSystemLog), New Object() {0})
+        currentState = GamePad.GetState(PlayerIndex.One)
+        If setXBoxButtons() Then
+            Me.Dispatcher.Invoke(New mainLog(AddressOf addOutSystemLog), New Object() {1})
+        End If
     End Sub
 End Class

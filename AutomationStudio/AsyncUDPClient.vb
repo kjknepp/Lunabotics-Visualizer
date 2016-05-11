@@ -18,12 +18,11 @@ Public Class AsyncUDPClient
 
     Private _Listner As Task
     Private _ListnerCTS As CancellationTokenSource
+    'Public Shared BbbIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("192.168.1.31"), 9909)
+    'Public Shared MyIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("192.168.1.23"), 9910)
     Public Shared BbbIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("192.168.1.31"), 9909)
     Public Shared MyIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("192.168.1.28"), 9910)
-    'Public Shared BbbIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("128.211.225.249"), 9909)
-    'Public Shared MyIP As IPEndPoint = New IPEndPoint(IPAddress.Parse("10.192.26.208"), 9910)
     Public Shared client As New AsyncUDPClient()
-    Public Shared hasSent As Boolean = 0
     'Public Shared doConnect As Boolean = 0
 
 
@@ -78,7 +77,6 @@ Public Class AsyncUDPClient
 
     ' Async Send Recieve Functions with Time Out
     Public Async Function SendAsync(ByVal Datagram() As Byte, ByVal TimeOut As Integer, ByVal DestEndPoint As EndPoint) As Task(Of Integer)
-        hasSent = 1
         If Datagram Is Nothing Then
             Throw New Exception("The Datagram() passed as argument is null.")
             Return -1

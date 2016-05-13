@@ -52,13 +52,13 @@ Class MainWindow
 
     Private theNegs As Byte
 
-    Private nextPointCurrent As Integer = 1
-    Private nextPointVoltage As Integer = 1
-    Private nextPointPower As Integer = 1
-
     Private isAuto As Integer = 1
     Private isRunning As Integer = 0
     Private dontTry As Integer = 0
+
+    Private notSent As Integer = 0
+    Private notRecieved As Integer = 0
+    Private controllerError As Integer = 0
 
     Private Sub Window_Loaded(sender As Object, e As RoutedEventArgs)
 
@@ -72,52 +72,46 @@ Class MainWindow
 
     Delegate Sub outLogs(ByVal a As Byte())
     Friend Sub setComLog(ByVal a As Byte())
-        'ComLog.Text += TimeValue(Now) + ":  "
-        'ComLog.Text += "Bucket Weight:" + CStr(a(0)) + " "
-        'ComLog.Text += "Current:" + CStr((a(1) << 8) + a(2)) + " "
-        'ComLog.Text += "depActHeight:" + CStr(a(3)) + " "
-        'ComLog.Text += "Err:" + CStr(a(4)) + " "
-        'ComLog.Text += "Position:" + CStr(a(5)) + "," + CStr(a(6)) + " "
-        'ComLog.Text += "Direction:" + CStr(a(7)) + CStr(a(8)) + " "
-        'ComLog.Text += "TotalPower:" + CStr((a(9) << 8) + a(10)) + " "
-        'ComLog.Text += "ExcActHeight:" + CStr(a(11)) + " "
-        'ComLog.Text += "ExcRPM:" + CStr((a(12) << 8) + a(13)) + " "
-        'ComLog.Text += "LeftRPM:" + CStr((a(14) << 8) + a(15)) + " "
-        'ComLog.Text += "RightRPM:" + CStr((a(16) << 8) + a(17)) + " "
-        'ComLog.Text += "Voltage:" + CStr((a(18) << 8) + a(19)) + " "
-        'ComLog.Text += "BumperPos:" + CStr(a(20)) + " "
-        'ComLog.Text += "ExcCurrent:" + CStr((a(21) << 8) + a(22)) + " "
-        'ComLog.Text += "LeftCurrent:" + CStr((a(23) << 8) + a(24)) + " "
-        'ComLog.Text += "RightCurrent:" + CStr((a(25) << 8) + a(24)) + "
-        '"
-
+        ComLog.Text += TimeValue(Now) + ","
+        ComLog.Text += CStr(a(0)) + ","
+        ComLog.Text += CStr((Convert.ToInt32(a(1)) << 8) + Convert.ToInt32(a(2))) + ","
+        ComLog.Text += CStr(a(3)) + ","
+        ComLog.Text += CStr(a(4)) + ","
+        ComLog.Text += CStr(a(5)) + ","
+        ComLog.Text += CStr(a(6)) + ","
+        ComLog.Text += CStr(a(7)) + ","
+        ComLog.Text += CStr((Convert.ToInt32(a(8)) << 8) + Convert.ToInt32(a(9))) + ","
+        ComLog.Text += CStr(a(10)) + ","
+        ComLog.Text += CStr((Convert.ToInt32(a(11)) << 8) + Convert.ToInt32(a(12))) + ","
+        ComLog.Text += CStr((Convert.ToInt32(a(13)) << 8) + Convert.ToInt32(a(14))) + ","
+        ComLog.Text += CStr(a(15)) + "
+"
     End Sub
+
+    Delegate Sub easyLog(ByVal value As Integer)
+    Friend Sub systemLog(ByVal value As Integer)
+        outSystemLog.Text = ""
+        If controllerError Then
+            outSystemLog.Text += "Controller not connected
+"
+        End If
+        If notRecieved Then
+            outSystemLog.Text += "Message not recieved
+"
+        End If
+        If notSent Then
+            outSystemLog.Text += "Message not sent
+"
+        End If
+    End Sub
+
+
+
 
     Delegate Sub SetVectors(ByVal x As Integer, ByVal y As Integer)
     Friend Sub setPosition(ByVal x As Integer, ByVal y As Integer) 'SET POSITION HERE
     End Sub
     Friend Sub setDirection(ByVal x As Integer, ByVal y As Integer) 'SET DIRECTION HERE
-    End Sub
-
-
-
-
-
-    Delegate Sub mainLog(ByVal value As Integer)
-    Friend Sub resetOutSystemLog(ByVal value As Integer)
-        outSystemLog.Text = ""
-    End Sub
-    Friend Sub addOutSystemLog(ByVal value As Integer)
-        If value = 1 Then
-            outSystemLog.Text += "Controller not connected
-"
-        ElseIf value = 2 Then
-            outSystemLog.Text += "Message not recieved
-"
-        ElseIf value = 3 Then
-            outSystemLog.Text += "Message not sent
-"
-        End If
     End Sub
 
 
@@ -133,7 +127,36 @@ Class MainWindow
         End If
     End Sub
     Friend Sub setSwitches(ByVal value As Integer)
-        outBucket_control.Text = value
+        If (value And (1 << 7)) Then
+            excavStowed_control.Text = "True"
+        Else
+            excavStowed_control.Text = "False"
+        End If
+        If (value And (1 << 6)) Then
+            excavExtended_control.Text = "True"
+        Else
+            excavExtended_control.Text = "False"
+        End If
+        If (value And (1 << 5)) Then
+            binExtended_control.Text = "True"
+        Else
+            binExtended_control.Text = "False"
+        End If
+        If (value And (1 << 4)) Then
+            binStowed_control.Text = "True"
+        Else
+            binStowed_control.Text = "False"
+        End If
+        If (value And (1 << 3)) Then
+            leftBumper_control.Text = "True"
+        Else
+            leftBumper_control.Text = "False"
+        End If
+        If (value And (1 << 2)) Then
+            rightBumper_control.Text = "True"
+        Else
+            rightBumper_control.Text = "False"
+        End If
     End Sub
     Friend Sub setCurrent(ByVal value As Integer)
         Dim out As Double = Convert.ToDouble(value) / BYTE2MAX * SYS_MAXCURRENT
@@ -145,9 +168,6 @@ Class MainWindow
         'nextPointCurrent += 1
         'thing.Value = value
 
-    End Sub
-    Friend Sub setDepPos(ByVal value As Integer)
-        outDepHeight_control.Text = value
     End Sub
     Friend Sub setERR(ByVal value As Integer) 'FIX ERR CODES HERE
     End Sub
@@ -423,22 +443,25 @@ Class MainWindow
             If result = 6 Then
                 AutoToggle.IsEnabled = False
                 isAuto = 0
+            ElseIf result = 7 Then
+                AutoToggle.IsChecked = True
             End If
         End If
     End Sub
 
     Private Sub saveButton_Click(sender As Object, e As RoutedEventArgs) Handles saveButton.Click
         Dim L As Boolean = 1
-        Dim LogFile As String = "LogFile"
+        Dim LogFile As String = "LogFile.csv"
         Dim i As Integer = 0
         While ([L])
             If My.Computer.FileSystem.FileExists(LogFile) Then
-                LogFile = "LogFile"
-                LogFile += CStr(i)
+                LogFile = "LogFile" + CStr(i) + ".csv"
                 i += 1
             Else
                 Dim file As System.IO.StreamWriter
-                file = My.Computer.FileSystem.OpenTextFileWriter(LogFile + ".txt", True)
+                file = My.Computer.FileSystem.OpenTextFileWriter(LogFile, True)
+                file.Write("Time,Switches,Current,Err,Position X,Position Y,Direction X,Direcion Y,Total Power,Exc Position,System Voltage,Exc Current,The Negatives
+")
                 file.Write(ComLog.Text)
                 file.Close()
                 L = 0
@@ -460,7 +483,7 @@ Class MainWindow
         Dim outMessage(7) As Byte
         Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf checkAutoToggle), New Object() {1})
         Try
-            If isAuto = 0 Then
+            If isAuto = 0 Then 'CHANGE FOR AUTONOMY CHANGE 0 to 1
                 outMessage(0) = 1 'Auto ON
                 Dim r As Integer = Await AsyncUDPClient.client.SendAsync(outMessage, 10, AsyncUDPClient.BbbIP)
             Else
@@ -486,8 +509,9 @@ Class MainWindow
 
                 Dim r As Integer = Await AsyncUDPClient.client.SendAsync(outMessage, 1, AsyncUDPClient.BbbIP)
             End If
+            notSent = 0
         Catch
-            Me.Dispatcher.Invoke(New mainLog(AddressOf addOutSystemLog), New Object() {3})
+            notSent = 1
         End Try
     End Sub
 
@@ -498,7 +522,7 @@ Class MainWindow
         Try
             a = Await AsyncUDPClient.client.ReceiveAsync(1)
             theNegs = a(15)
-            Me.Dispatcher.Invoke(New outLogs(AddressOf setComLog), New Object() {a}) 'Needs Update
+            Me.Dispatcher.Invoke(New outLogs(AddressOf setComLog), New Object() {a})
             Me.Dispatcher.Invoke(New SetCheckBoxCallback(AddressOf setOnline), New Object() {True})
             Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setSwitches), New Object() {a(0)})
 
@@ -515,12 +539,11 @@ Class MainWindow
             Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setExcPos), New Object() {a(10)})
 
             Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setVoltage), New Object() {(Convert.ToInt32(a(11)) << 8) + Convert.ToInt32(a(12))})
-            'Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setBumperSwitches), New Object() {a(13)})
 
             Me.Dispatcher.Invoke(New SetTextBoxes(AddressOf setExcCurrent), New Object() {(Convert.ToInt32(a(13)) << 8) + Convert.ToInt32(a(14))})
-
+            notRecieved = 0
         Catch
-            Me.Dispatcher.Invoke(New mainLog(AddressOf addOutSystemLog), New Object() {2})
+            notRecieved = 1
         End Try
     End Sub
 
@@ -528,11 +551,13 @@ Class MainWindow
 
     Private Async Sub Timer1_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer1.Elapsed
         Await Task.Delay(0)
+        Me.Dispatcher.Invoke(New easyLog(AddressOf systemLog), New Object() {1})
         isRunning = 1
-        'Me.Dispatcher.Invoke(New mainLog(AddressOf resetOutSystemLog), New Object() {0})
         currentState = GamePad.GetState(PlayerIndex.One)
         If setXBoxButtons() Then
-            Me.Dispatcher.Invoke(New mainLog(AddressOf addOutSystemLog), New Object() {1})
+            controllerError = 1
+        Else
+            controllerError = 0
         End If
     End Sub
 End Class

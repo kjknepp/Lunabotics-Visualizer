@@ -19,29 +19,27 @@ SYS_MAXPOWER = 1000
 SYS_MAXCUMPOW = 500
 
 limitSwitches = 0 ##
-s0 = 0
-s1 = 0
-s2 = 0
-s3 = 0
-s4 = 0
-s5 = 0
+s0 = 1
+s1 = 1
+s2 = 1
+s3 = 1
+s4 = 1
+s5 = 1
 err = 0 #ERR Codes will be determined later for All possible errors
-positionX = 0 #From RPI
-positionY = 0 # ||
-directionX = 0# ||
-directionY = 0# ||
+positionX = 34 #From RPI
+positionY = 65 # ||
+directionX = 12# ||
+directionY = 56# ||
 excav_pos = 0 ##
 bumperSwitches = 0 ##
-excav_current = 0 ##2 Bytes
-sys_voltage = 0 ##
-sys_current = 0 ##
-sys_cumpower = 0 ##
-sys_power = 0
-angle_voltage = 0
+excav_current = 8.32 ##2 Bytes
+sys_voltage = 24.31 ##
+sys_current = 1.6 ##
+sys_cumpower = 120 ##
+sys_power = 12.3
+angle_voltage = .123
 message = ""
 
-
-excav_current = 0
 left_drive_current = 0
 right_drive_current = 0
 

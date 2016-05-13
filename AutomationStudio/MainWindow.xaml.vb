@@ -60,6 +60,8 @@ Class MainWindow
     Private notRecieved As Integer = 0
     Private controllerError As Integer = 0
 
+    Private undisplayedLog As String = ""
+
     Private Sub Window_Loaded(sender As Object, e As RoutedEventArgs)
 
     End Sub
@@ -72,20 +74,41 @@ Class MainWindow
 
     Delegate Sub outLogs(ByVal a As Byte())
     Friend Sub setComLog(ByVal a As Byte())
+        If Len(ComLog.Text) > 1000 Then
+            Dim b As String() = Split(ComLog.Text, vbNewLine)
+
+            ComLog.Text = String.Join(vbNewLine, b, 1, b.Length - 1)
+        End If
+
         ComLog.Text += TimeValue(Now) + ","
         ComLog.Text += CStr(a(0)) + ","
-        ComLog.Text += CStr((Convert.ToInt32(a(1)) << 8) + Convert.ToInt32(a(2))) + ","
+        ComLog.Text += CStr(Convert.ToDouble(Convert.ToInt16(Convert.ToDouble((Convert.ToInt32(a(1)) << 8) + Convert.ToInt32(a(2))) / BYTE2MAX * SYS_MAXCURRENT * 100)) / 100) + ","
         ComLog.Text += CStr(a(3)) + ","
         ComLog.Text += CStr(a(4)) + ","
         ComLog.Text += CStr(a(5)) + ","
         ComLog.Text += CStr(a(6)) + ","
         ComLog.Text += CStr(a(7)) + ","
-        ComLog.Text += CStr((Convert.ToInt32(a(8)) << 8) + Convert.ToInt32(a(9))) + ","
+        ComLog.Text += CStr(Convert.ToDouble(Convert.ToInt16(Convert.ToDouble((Convert.ToInt32(a(8)) << 8) + Convert.ToInt32(a(9))) / BYTE2MAX * SYS_MAXCUMPOW * 100)) / 100) + ","
         ComLog.Text += CStr(a(10)) + ","
-        ComLog.Text += CStr((Convert.ToInt32(a(11)) << 8) + Convert.ToInt32(a(12))) + ","
-        ComLog.Text += CStr((Convert.ToInt32(a(13)) << 8) + Convert.ToInt32(a(14))) + ","
+        ComLog.Text += CStr(Convert.ToDouble(Convert.ToInt16(Convert.ToDouble((Convert.ToInt32(a(11)) << 8) + Convert.ToInt32(a(12))) / BYTE2MAX * SYS_MAXVOLT * 100)) / 100) + ","
+        ComLog.Text += CStr(Convert.ToDouble(Convert.ToInt16(Convert.ToDouble((Convert.ToInt32(a(13)) << 8) + Convert.ToInt32(a(14))) / BYTE2MAX * EXCAV_MAXCURRENT * 100)) / 100) + ","
         ComLog.Text += CStr(a(15)) + "
 "
+        undisplayedLog += TimeValue(Now) + ","
+        undisplayedLog += CStr(a(0)) + ","
+        undisplayedLog += CStr(Convert.ToDouble(Convert.ToInt16(Convert.ToDouble((Convert.ToInt32(a(1)) << 8) + Convert.ToInt32(a(2))) / BYTE2MAX * SYS_MAXCURRENT * 100)) / 100) + ","
+        undisplayedLog += CStr(a(3)) + ","
+        undisplayedLog += CStr(a(4)) + ","
+        undisplayedLog += CStr(a(5)) + ","
+        undisplayedLog += CStr(a(6)) + ","
+        undisplayedLog += CStr(a(7)) + ","
+        undisplayedLog += CStr(Convert.ToDouble(Convert.ToInt16(Convert.ToDouble((Convert.ToInt32(a(8)) << 8) + Convert.ToInt32(a(9))) / BYTE2MAX * SYS_MAXCUMPOW * 100)) / 100) + ","
+        undisplayedLog += CStr(a(10)) + ","
+        undisplayedLog += CStr(Convert.ToDouble(Convert.ToInt16(Convert.ToDouble((Convert.ToInt32(a(11)) << 8) + Convert.ToInt32(a(12))) / BYTE2MAX * SYS_MAXVOLT * 100)) / 100) + ","
+        undisplayedLog += CStr(Convert.ToDouble(Convert.ToInt16(Convert.ToDouble((Convert.ToInt32(a(13)) << 8) + Convert.ToInt32(a(14))) / BYTE2MAX * EXCAV_MAXCURRENT * 100)) / 100) + ","
+        undisplayedLog += CStr(a(15)) + "
+"
+
     End Sub
 
     Delegate Sub easyLog(ByVal value As Integer)
@@ -460,9 +483,9 @@ Class MainWindow
             Else
                 Dim file As System.IO.StreamWriter
                 file = My.Computer.FileSystem.OpenTextFileWriter(LogFile, True)
-                file.Write("Time,Switches,Current,Err,Position X,Position Y,Direction X,Direcion Y,Total Power,Exc Position,System Voltage,Exc Current,The Negatives
+                file.Write("Time,Switches,Current,Err,Position X,Position Y,Direction X,Direction Y,Total Power,Exc Position,System Voltage,Exc Current,The Negatives
 ")
-                file.Write(ComLog.Text)
+                file.Write(undisplayedLog)
                 file.Close()
                 L = 0
             End If

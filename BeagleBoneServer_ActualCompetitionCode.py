@@ -1,6 +1,6 @@
 #BeagleBone Black Control Server Code
 #Purdue Lunabotics
-#Ver. Date 3/26/2016
+#Ver. Date 5/16/2016
 
 #Adafruit_BBIO Libary handles pin outputs for PWM GPIO ADC and UART
 import Adafruit_BBIO.UART as UART       #Pin serial setup
@@ -113,6 +113,7 @@ GPIO.setup(left_drive_encod_b, GPIO.IN)
 GPIO.setup(excav_encod_a, GPIO.IN)
 #GPIO.setup(excav_encod_b, GPIO.IN)
 
+angle_voltage = 0
 
 
 #-----------------------------Setup Variables and Connections-------------------------------------
@@ -120,7 +121,7 @@ UDP_IPbbb = "192.168.1.31"        #IP to recieve at (BeagleBone's IP)
 UDP_PORTfromcpu = 9909               #Port to listen on
 UDP_PORTfromodroid = 9908
 
-UDP_IPcpu = "192.168.1.23"        #IP to send at (CPU IP)
+UDP_IPcpu = "192.168.1.34"        #IP to send at (CPU IP)
 UDP_PORTtocpu = 9910
 
 UDP_IPodroid = "192.168.1.33"        #IP to send at (Odriod IP)
@@ -167,19 +168,32 @@ SYS_MAXCURRENT = 40
 SYS_MAXPOWER = 1000
 SYS_MAXCUMPOW = 500
 
-binSwitches = 0 ##
+bucketWeight = 0 ##
 err = 0 #ERR Codes will be determined later for All possible errors
 positionX = 0 #From RPI
 positionY = 0 # ||
 directionX = 0# ||
 directionY = 0# ||
+dep_pos = 0 ##
 excav_pos = 0 ##
-bumperSwitches = 0 ##
+bumper_pos = 0 ##
+excav_rpm = 0 ##2 Bytes
 excav_current = 0 ##2 Bytes
+left_drive_rpm = 0 ##
+left_drive_current = 0 ##
+right_drive_rpm = 0 ##
+right_drive_current = 0 ##
 sys_voltage = 0 ##
 sys_current = 0 ##
 sys_cumpower = 0 ##
 sys_power = 0
+
+s0 = 0
+s1 = 0
+s2 = 0
+s3 = 0
+s4 = 0
+s5 = 0
 
 message = ""
 
@@ -371,32 +385,57 @@ def updateLimitSensors():
     global excav_pos
     global dep_pos
     global bumper_pos
+    global s0
+    global s1
+    global s2
+    global s3
+    global s4
+    global s5
     
-    if not GPIO.input(excav_limit_stowed):
+    
+    if not GPIO.input(excav_limit_stowed): #s0
         excav_pos = 0
-        print "excav 0"
-    elif not GPIO.input(excav_limit_extended):
+        s0 = 1
+        s1 = 0
+        #print "excav 0"
+    elif not GPIO.input(excav_limit_extended): #s1
         excav_pos = 2
-        print "excav 2"
+        s0 = 0
+        s1 = 1
+        #print "excav 2"
     else:
+        s0 = 0
+        s1 = 0
         excav_pos = 1
 
-    if not GPIO.input(dep_limit_extended):
-        print "dep 2"
+    if not GPIO.input(dep_limit_extended): #s2
+        #print "dep 2"
+        s2 = 1
+        s3 = 0
         dep_pos = 2
-    elif not GPIO.input(dep_limit_stowed):
+    elif not GPIO.input(dep_limit_stowed): #s3
         dep_pos = 0
-        print "dep 0"
+        s2 = 0
+        s3 = 1
+        #print "dep 0"
     else:
         dep_pos = 1
+        s2 = 0
+        s3 = 0
 
     bumper_pos = 0 
-    if not GPIO.input(bumper_left):
+    if not GPIO.input(bumper_left): #s4
         bumper_pos = 1
-        print "bump 1"
-    if not GPIO.input(bumper_right):
+        s4 = 1
+        #print "bump 1"
+    else:
+        s4 = 0
+    if not GPIO.input(bumper_right): #s5
         bumper_pos = bumper_pos + 2
-        print "bump 2"
+        s5 = 1
+        #print "bump 2"
+    else:
+        s5 = 0
 
         
 
@@ -427,9 +466,11 @@ def updateLimitSensors():
 ##	
 ##    Bucket_Up = '1' == data_list[0]
 ##    Bucket_Down = '1' == data_list[1]
-##	
-##    BucketEle_Up = '1' == data_list[15]
-##    BucketEle_Down = '1' == data_list[12]
+##    if(excav_current < 20):
+##        BucketEle_Up = '1' == data_list[15]
+##        BucketEle_Down = '1' == data_list[12]
+##    else:
+##        BucketEle_Up = True
 ##
 ##    BucketEle_ccw = '1' == data_list[8]
 ##    BucketEle_cw  = '1' == data_list[9]
@@ -490,6 +531,8 @@ def parseData(data):
     global BucketEle_Up
     global BucketEle_Down
     global BucketEle_Run
+    global BucketEle_cw
+    global BucketEle_ccw
     global Bucket_Up
     global Bucket_Down
     global Motor_Left
@@ -530,33 +573,39 @@ def parseData(data):
         
     #print a, b, back, leftBumper, rightBumper, down, left, right, up, start, x, y
 
-    Bucket_Up = 1 == y
-    Bucket_Down = 1 == a
-    print Bucket_Down
-    print Bucket_Up
+    BucketEle_ccw = 1 == leftBumper
+    BucketEle_cw  = 1 == rightBumper
 
-    BucketEle_Up = 1 == up
-    print BucketEle_Up
+##    print BucketEle_ccw
+##    print BucketEle_cw
     
-    BucketEle_Down = 1 == down
-    print BucketEle_Down
+    Bucket_Up = 1 == up
+    Bucket_Down = 1 == down
+    if(excav_current < 20):
+        BucketEle_Up = 1 == y   
+        BucketEle_Down = 1 == a
+    else:
+        BucketEle_Up = True
+        BucketEle_Down = False
     
-    Run = '1' != start
 
-    if((old_bools & (MASK>>2)) >> 5 == '0' and x == '1'):
+    Run = 1 != start
+
+    if((old_bools & (MASK>>2)) >> 5 == 0 and x == 1):
         if(not BucketEle_Run == 0):
             BucketEle_Run = 0
         else:
             BucketEle_Run = 1
 
-    if((old_bools & (MASK>>1)) >> 6 == '0' and b == '1'):
-        if(runExcavator):
-            runExcavator = False
+    if((old_bools & (MASK>>1)) >> 6 == 0 and b == 1):
+        if(not BucketEle_Run == 0):
+            BucketEle_Run = 0
         else:
-            runExcavator = True
+            BucketEle_Run = -1
 
-    if((old_bools & (MASK>>2)) >> 5 == '0' and back == '1'):
-        servo.start()
+    if((old_bools & (MASK>>2)) >> 5 == 0 and back == 1 and autoAngle == False):
+        digAngle = threading.Thread(target=goToDigAngle)
+        digAngle.start()
         
     Motor_Left = int(leftStick * 100 / 255)
     if Motor_Left < 20 and Motor_Left > -20:    #deadzone handling
@@ -624,8 +673,8 @@ def signal_handler(signal, frame):
     print 'You pressed Ctrl+C!'
     Run = False
     shutdown()
-    GPIO.cleanup()
     sleep(0.5)
+    GPIO.cleanup()
     os._exit(0)
 
 
@@ -642,6 +691,10 @@ def updateSystemPower(text):
         sys_current = float(text[11:17])
         sys_power = float(text[20:26])
         sys_cumpower = float(text[29:35])
+        lcd.home()
+        sleep(0.1)
+        lcd.message(str(sys_cumpower) + "WH")
+        print(str(sys_cumpower) + "WH")
     except:
         print "Data Logger Parse Fail!\n"
         print text[1:8]
@@ -697,7 +750,7 @@ def laptopListener():
             ##Inputs from the laptop
             if s is sockLap:
                 dataIn, addr = s.recvfrom(1024) # buffer size is 1024 bytes
-##                autoOn = ord(dataIn[0])
+                autoOn = ord(dataIn[0])
                 autoOn = 0
                 if autoOn == 0:
                     parseData(dataIn)
@@ -733,6 +786,7 @@ def laptopListener():
                 directionY = ord(autoDataIn(10))
                 
                 if autoOn == 1:
+                    print "Fail"
                     parseData(autoDataIn)
 
                     if(Bucket_Up or GPIO.input(excav_limit_stowed) == 1): #don't run drivetrain at the same time as deposition bucket
@@ -793,9 +847,7 @@ def dataLoggerListener():
                 updateLimitSensors()
                 if(ser.inWaiting() != 0):
                     loggerText = ser.readline()
-                    print loggerText
-                    lcd.clear()
-                    lcd.message(loggerText[3:18]+"\n"+loggerText[21:])
+                    #print loggerText
                     updateSystemPower(loggerText)
                 sleep(0.4)
         try:        
@@ -832,10 +884,10 @@ def sendUpdate():
             theNegs += (1<<7)
             outExcCurrent = outExcCurrent * -1
         
-        
+        limitSwitches = (s0<<7)+(s1<<6)+(s2<<5)+(s3<<4)+(s4<<3)+(s5<<2)
         
         #Compile Message
-        message = chr(binSwitches)
+        message = chr(limitSwitches)
         
         message = message+chr((outSysCurrent&(BYTEMAX<<8))>>8)
         message = message+chr(outSysCurrent&BYTEMAX)
@@ -854,12 +906,12 @@ def sendUpdate():
         message = message+chr((outSysVoltage&(BYTEMAX<<8))>>8)
         message = message+chr(outSysVoltage&BYTEMAX)
 
-        message = message+chr(bumperSwitches)
-
         message = message+chr((outExcCurrent&(BYTEMAX<<8))>>8)
         message = message+chr(outExcCurrent&BYTEMAX)
         
         message = message+chr(theNegs)
+
+        #print "HELLO"
         
         try:
             socksend.sendto(message,(UDP_IPcpu,UDP_PORTtocpu))
@@ -867,7 +919,7 @@ def sendUpdate():
             print "Send Failed"
         
 
-        sleep(0.5)
+        sleep(0.1)
 
     
 #tracks encoder pulses and periodically updates rpm counters
@@ -993,9 +1045,9 @@ def pollCurrentSensors():
             volt_12 = sum(volt_list)/float(maxCount)
             curr_voltage = sum(curr_list)/float(maxCount)
 
-            excav_current = (curr_voltage-volt_12/2)/.048
-            print "Excavator Angle: ", angle_voltage
-            print "Excavator Current: ", excav_current
+            excav_current = (curr_voltage-(volt_12-12)-6)/.048
+            #print "Excavator Angle: ", angle_voltage, "   Excavator Current: ",excav_current , volt_12, curr_voltage
+            #print , excav_current
             mark = time.time()
         sleep(0.025)
 
@@ -1010,11 +1062,13 @@ def goToDigAngle():
     print diff
     print "-------"
     while(abs(diff)> 0.01 and Run == True):
-        speed = int(diff * 500)
+        speed = int(diff * 1000)
         if(speed < 0):
             print "ccw"
             if(speed < -75):
-                speed = 75
+                speed = -75
+            if(diff > -0.10):
+                speed = 30
             serEleAng.write(serial.to_bytes('\x86'))
             serEleAng.write(serial.to_bytes('\x00'))
             serEleAng.write(serial.to_bytes(chr(abs(speed))))
@@ -1023,6 +1077,8 @@ def goToDigAngle():
             print "cw"
             if(speed > 75):
                 speed = 75
+            if(diff < 0.10):
+                speed = 35
             serEleAng.write(serial.to_bytes('\x85'))
             serEleAng.write(serial.to_bytes('\x00'))
             serEleAng.write(serial.to_bytes(chr(abs(speed))))
@@ -1051,7 +1107,7 @@ dataLogger.start()
 outputs = threading.Thread(target=sendUpdate)
 outputs.start()
 excavator = threading.Thread(target=excavationControl)
-excavator.start()
+##excavator.start()
 adcPolling = threading.Thread(target=pollCurrentSensors)
 adcPolling.start()
 
